@@ -1,0 +1,613 @@
+/* Variables for easy theme management */
+:root {
+    --primary-color: #4A90E2; /* A modern, inviting blue */
+    --secondary-color: #6a737d; /* Soft gray for secondary text */
+    --accent-color: #5cb85c; /* Green for success */
+    --danger-color: #d9534f; /* Red for errors/rejection */
+    --background-light: #f4f6f9; /* Off-white for general background */
+    --background-card: #ffffff; /* Pure white for cards */
+    --text-dark: #333333; /* Dark gray for main text */
+    --text-light: #f0f0f0; /* Light text for dark backgrounds */
+    --border-color: #e0e0e0; /* Subtle border color */
+    --shadow-light: rgba(0, 0, 0, 0.1); /* Soft shadow */
+    --shadow-medium: rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+    --font-family: 'Poppins', sans-serif;
+}
+
+/* Base Styles */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-light);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    color: var(--text-dark);
+    line-height: 1.6;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+#app {
+    background-color: var(--background-light);
+    width: 100%;
+    max-width: 420px; /* Max width for iPhone 15 Pro and similar mobiles */
+    box-shadow: 0 0 20px var(--shadow-medium);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    border-radius: 15px; /* Slightly rounded app container for a modern look */
+    overflow: hidden; /* Ensures content and shadows are contained */
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    z-index: 10;
+    position: sticky; /* Keep header visible on scroll */
+    top: 0;
+    width: 100%;
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.app-title {
+    font-size: 1.5em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.hamburger-menu {
+    font-size: 2em;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.hamburger-menu:active {
+    transform: scale(0.9);
+}
+
+/* Side Navigation */
+.side-nav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 20;
+    top: 0;
+    right: 0;
+    background-color: #2c3e50; /* Darker tone for side menu */
+    overflow-x: hidden;
+    transition: 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86); /* Smooth, elegant transition */
+    padding-top: 80px;
+    box-shadow: -8px 0 20px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+.side-nav a {
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 1.2em;
+    color: var(--text-light);
+    display: block;
+    transition: background-color 0.3s ease, color 0.3s ease, padding-left 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.side-nav a:hover {
+    background-color: var(--primary-color);
+    color: white;
+    padding-left: 35px;
+}
+
+.side-nav .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 2.8em;
+    color: var(--text-light);
+    transition: transform 0.3s ease;
+}
+
+.side-nav .close-btn:hover {
+    color: var(--danger-color);
+    transform: rotate(90deg);
+}
+
+/* Page Container */
+.page {
+    display: none;
+    padding: 25px 20px;
+    flex-grow: 1;
+    padding-bottom: 90px; /* Space for fixed footer */
+    overflow-y: auto; /* Enable scrolling for content within page */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.card {
+    background-color: var(--background-card);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px var(--shadow-light);
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px var(--shadow-medium);
+}
+
+h1, h2, h3 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+h1 { font-size: 2em; }
+h2 { font-size: 1.6em; }
+h3 { font-size: 1.3em; }
+
+/* Form Elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+textarea {
+    width: calc(100% - 28px); /* Account for padding and border */
+    padding: 14px;
+    margin-bottom: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 1.05em;
+    color: var(--text-dark);
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+    outline: none;
+}
+
+input[type="file"] {
+    margin-bottom: 18px;
+    width: 100%;
+    font-size: 1em;
+    padding: 8px 0; /* Add some vertical padding for better touch target */
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.15em;
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 12px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+}
+
+button:hover {
+    background-color: #3a7bcc;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(74, 144, 226, 0.4);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(74, 144, 226, 0.2);
+}
+
+button:disabled {
+    background-color: var(--secondary-color);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+
+.link {
+    color: var(--primary-color);
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.link:hover {
+    color: #3a7bcc;
+    text-decoration: underline;
+}
+
+.switch-auth {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.95em;
+    color: var(--secondary-color);
+}
+
+/* Welcome Page Specific */
+.welcome-card h1 {
+    font-size: 2em;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.image-slider-container {
+    text-align: center;
+    margin: 25px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px var(--shadow-light);
+}
+
+#slider-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block; /* Remove extra space below image */
+    transition: opacity 1s ease-in-out;
+}
+
+.loan-options {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 30px;
+}
+
+.loan-card {
+    background-color: var(--background-light);
+    padding: 22px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 10px var(--shadow-light);
+}
+
+.loan-card:hover {
+    background-color: #eaf1f7; /* Lighter shade on hover */
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px var(--shadow-medium);
+}
+
+.loan-card h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+.loan-card p {
+    font-size: 1em;
+    color: var(--secondary-color);
+    margin: 0;
+}
+
+
+/* Tracker Page */
+#tracker-results div {
+    background-color: var(--background-light);
+    padding: 18px;
+    border-radius: 10px;
+    margin-top: 18px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+#tracker-results h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+#tracker-results p {
+    margin: 6px 0;
+    font-size: 0.98em;
+}
+
+/* Analytics Page */
+#analytics-page p {
+    margin: 12px 0;
+    font-size: 1.1em;
+    display: flex; /* For aligning text and button */
+    align-items: center;
+}
+
+#analytics-page button {
+    width: auto;
+    padding: 8px 18px;
+    font-size: 0.95em;
+    margin-left: 10px;
+    margin-bottom: 0; /* Override default button margin */
+}
+
+#rating-stars {
+    text-align: center;
+    margin: 20px 0 25px;
+}
+#rating-stars .star {
+    font-size: 2.5em;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    margin: 0 3px;
+    display: inline-block; /* Allow individual scaling */
+}
+
+#rating-stars .star:hover {
+    transform: scale(1.1);
+}
+
+#rating-stars .star.selected {
+    color: #FFD700; /* Gold color for selected stars */
+}
+
+.rating-display {
+    text-align: center;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+#feedback-status {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95em;
+}
+
+/* Admin Page */
+.application-item {
+    background-color: var(--background-light);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-light);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.application-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px var(--shadow-medium);
+}
+
+.application-item h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-size: 1.25em;
+}
+
+.application-item p {
+    margin: 5px 0;
+    font-size: 0.95em;
+}
+
+.application-item ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap; /* Allow links to wrap */
+    gap: 10px; /* Space between links */
+}
+
+.application-item ul li {
+    margin-bottom: 5px; /* Space between list items */
+}
+
+.application-item button {
+    width: auto;
+    padding: 10px 18px;
+    margin-right: 12px;
+    font-size: 0.9em;
+    display: inline-block;
+    vertical-align: middle;
+    box-shadow: none; /* Remove default button shadow for these smaller buttons */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.application-item button.approve-btn { background-color: var(--accent-color); }
+.application-item button.approve-btn:hover { background-color: #449d44; }
+
+.application-item button.reject-btn { background-color: var(--danger-color); }
+.application-item button.reject-btn:hover { background-color: #c9302c; }
+
+
+.application-item .status-pending { background-color: #ffc107; color: var(--text-dark); padding: 5px 10px; border-radius: 5px; font-weight: 600; }
+.application-item .status-approve { background-color: var(--accent-color); color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600; }
+.application-item .status-reject { background-color: var(--danger-color); color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600; }
+
+.application-item .document-link {
+    display: inline-block;
+    margin-top: 5px;
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-size: 0.9em;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+}
+.application-item .document-link:hover {
+    color: #3a7bcc;
+}
+
+/* Footer Navigation */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%; /* Center the footer */
+    transform: translateX(-50%); /* Adjust for centering */
+    width: 100%;
+    max-width: 420px; /* Match app max-width */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--primary-color);
+    padding: 10px 0;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    border-top-left-radius: 15px; /* Match app border radius */
+    border-top-right-radius: 15px;
+}
+
+.footer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-light);
+    font-size: 0.75em; /* Slightly smaller for compactness */
+    font-weight: 500;
+    cursor: pointer;
+    flex: 1;
+    padding: 8px 0;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+.footer-item img {
+    width: 26px; /* Slightly smaller icons */
+    height: 26px;
+    margin-bottom: 5px;
+    filter: invert(100%) saturate(0%); /* Make icons white */
+    transition: filter 0.3s ease, transform 0.2s ease;
+}
+
+.footer-item span {
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.footer-item:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.footer-item:active {
+    transform: translateY(0);
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.footer-item:hover img {
+    transform: scale(1.1);
+    filter: invert(100%) saturate(100%); /* Maintain white icon */
+}
+
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7); /* Darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease; /* Fade in/out effect */
+    opacity: 0; /* Start hidden */
+}
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: var(--background-card);
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 380px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    text-align: center;
+    transform: translateY(-20px); /* Start slightly above center */
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Slide and fade in */
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.modal-content h2 {
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    font-size: 1.8em;
+}
+
+.modal-content button {
+    margin-top: 25px;
+    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3); /* Add shadow to modal button */
+}
+
+.close-button {
+    color: var(--secondary-color);
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--danger-color);
+    transform: rotate(90deg);
+}
+
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.95em;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+/* Responsive Adjustments (Optional, as max-width handles most of it) */
+@media (max-height: 700px) { /* For shorter screens */
+    .page {
+        padding-top: 15px;
+        padding-bottom: 80px;
+    }
+    .card {
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 320px) { /* Smaller iPhone SE / older devices */
+    .app-title {
+        font-size: 1.3em;
+    }
+    .hamburger-menu {
+        font-size: 1.6em;
+    }
+    .footer-item span {
+        font-size: 0.7em;
+    }
+}
