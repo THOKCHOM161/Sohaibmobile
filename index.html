@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chorahis World Loans</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="app-title">Sohaib Mobile </div>
+            <div class="hamburger-menu" id="hamburger-menu">
+                &#9776; </div>
+        </header>
+
+        <nav id="side-nav" class="side-nav">
+            <a href="#" class="close-btn" id="close-side-nav">&times;</a>
+            <a href="#" id="side-nav-admin">Admin Login</a>
+            <a href="#" id="side-nav-logout" style="display: none;">Logout</a>
+            </nav>
+
+        <div id="auth-page" class="page">
+            <div class="card auth-card">
+                <div id="register-section">
+                    <h2>Register</h2>
+                    <input type="text" id="register-username" placeholder="Username">
+                    <input type="email" id="register-email" placeholder="Email">
+                    <input type="password" id="register-password" placeholder="Password">
+                    <button id="register-btn">Register</button>
+                    <p class="switch-auth">Already have an account? <span class="link" id="show-login">Login here</span></p>
+                </div>
+                <div id="login-section" style="display: none;">
+                    <h2>Login</h2>
+                    <input type="email" id="login-email" placeholder="Email">
+                    <input type="password" id="login-password" placeholder="Password">
+                    <button id="login-btn">Login</button>
+                    <p class="switch-auth">New user? <span class="link" id="show-register">Register here</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="welcome-page" class="page" style="display: none;">
+            <div class="card welcome-card">
+                <h1>Welcome to Sohaib Mobile!</h1>
+                <div class="image-slider-container">
+                    <img id="slider-image" src="download.webp" alt="Loan Promotion">
+                </div>
+                <div class="loan-options">
+                    <div class="loan-card" id="youth-business-loan">
+                        <h3>Youth Business Loan</h3>
+                        <p>Start or grow your business today!</p>
+                    </div>
+                    <div class="loan-card" id="apna-ghar-apni-chat-loan">
+                        <h3>Apna Ghar Apni Chat Loan</h3>
+                        <p>Your dream home is within reach!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="youth-loan-page" class="page" style="display: none;">
+            <div class="card">
+                <h2>Youth Business Loan Application</h2>
+                <form id="youth-loan-form">
+                    <label for="youth-cnic-front">CNIC Front:</label>
+                    <input type="file" id="youth-cnic-front" accept="image/*" required>
+
+                    <label for="youth-cnic-back">CNIC Back:</label>
+                    <input type="file" id="youth-cnic-back" accept="image/*" required>
+
+                    <label for="youth-applicant-pic">Applicant Photo:</label>
+                    <input type="file" id="youth-applicant-pic" accept="image/*" required>
+
+                    <label for="youth-education">Education:</label>
+                    <input type="text" id="youth-education" placeholder="Highest Education" required>
+
+                    <label for="youth-work">Work Experience:</label>
+                    <input type="text" id="youth-work" placeholder="Job Title / Business Type" required>
+
+                    <label for="youth-mobile">Mobile Number:</label>
+                    <input type="tel" id="youth-mobile" placeholder="e.g., 03XX-XXXXXXX" required>
+
+                    <label for="youth-cnic-number">CNIC Number (for tracking):</label>
+                    <input type="text" id="youth-cnic-number" placeholder="e.g., XXXXX-XXXXXXX-X" required>
+
+                    <button type="submit">Submit Application</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="ghar-loan-page" class="page" style="display: none;">
+            <div class="card">
+                <h2>Apna Ghar Apni Chat Loan Application</h2>
+                <form id="ghar-loan-form">
+                    <label for="ghar-cnic-front">Applicant CNIC Front:</label>
+                    <input type="file" id="ghar-cnic-front" accept="image/*" required>
+
+                    <label for="ghar-cnic-back">Applicant CNIC Back:</label>
+                    <input type="file" id="ghar-cnic-back" accept="image/*" required>
+
+                    <label for="ghar-relative-cnic-front">Husband/Father/Wife CNIC Front:</label>
+                    <input type="file" id="ghar-relative-cnic-front" accept="image/*" required>
+
+                    <label for="ghar-mobile1">Mobile Number 1:</label>
+                    <input type="tel" id="ghar-mobile1" placeholder="e.g., 03XX-XXXXXXX" required>
+
+                    <label for="ghar-mobile2">Mobile Number 2:</label>
+                    <input type="tel" id="ghar-mobile2" placeholder="e.g., 03XX-XXXXXXX">
+
+                    <label for="ghar-plot-registry">Plot Registry:</label>
+                    <input type="file" id="ghar-plot-registry" accept="image/*" required>
+
+                    <label for="ghar-cnic-number">CNIC Number (for tracking):</label>
+                    <input type="text" id="ghar-cnic-number" placeholder="e.g., XXXXX-XXXXXXX-X" required>
+
+                    <button type="submit">Submit Application</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="tracker-page" class="page" style="display: none;">
+            <div class="card">
+                <h2>Application Tracker</h2>
+                <input type="text" id="tracker-cnic" placeholder="Enter your CNIC Number">
+                <button id="tracker-search-btn">Search Application</button>
+                <div id="tracker-results">
+                    </div>
+            </div>
+        </div>
+
+        <div id="analytics-page" class="page" style="display: none;">
+            <div class="card">
+                <h2>Analytics & Feedback</h2>
+                <p>App Views: <span id="app-views">0</span></p>
+                <p>App Likes: <span id="app-likes">0</span> <button id="like-btn">Like this App</button></p>
+                <div>
+                    <h3>Rate this App:</h3>
+                    <div class="stars" id="rating-stars">
+                        <span class="star" data-value="1">&#9733;</span>
+                        <span class="star" data-value="2">&#9733;</span>
+                        <span class="star" data-value="3">&#9733;</span>
+                        <span class="star" data-value="4">&#9733;</span>
+                        <span class="star" data-value="5">&#9733;</span>
+                    </div>
+                    <p class="rating-display">Your Rating: <span id="user-rating-display">Not Rated</span></p>
+                </div>
+                <h3>Feedback:</h3>
+                <textarea id="feedback-text" rows="5" placeholder="Share your thoughts..."></textarea>
+                <button id="submit-feedback-btn">Submit Feedback</button>
+                <div id="feedback-status"></div>
+            </div>
+        </div>
+
+        <div id="eligibility-page" class="page" style="display: none;">
+            <div class="card">
+                <h2>Eligibility Criteria</h2>
+                <h3>Youth Business Loan:</h3>
+                <p>A small business idea or existing small work is needed. Must be a Pakistani citizen and meet age requirements.</p>
+                <h3>Apna Ghar Apni Chat Loan:</h3>
+                <p>Ownership of a plot (plot registry needed). Must be a Pakistani citizen and meet financial eligibility.</p>
+            </div>
+        </div>
+
+        <div id="admin-login-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-button" id="close-admin-modal">&times;</span>
+                <h2>Admin Login</h2>
+                <input type="password" id="admin-password-input" placeholder="Admin Password">
+                <button id="admin-login-btn">Login</button>
+                <p id="admin-login-error" class="error-message" style="display: none;"></p>
+            </div>
+        </div>
+
+        <div id="admin-page" class="page" style="display: none;">
+            <div class="card">
+                <h2>Admin Panel</h2>
+                <div id="admin-applications">
+                    </div>
+                <button id="admin-logout-btn">Logout Admin</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-item" id="nav-welcome">
+                <img src="https://via.placeholder.com/30?text=🏠" alt="">
+                <span>Welcome</span>
+            </div>
+            <div class="footer-item" id="nav-eligibility">
+                <img src="https://via.placeholder.com/30?text=✔️" alt="">
+                <span>Eligibility</span>
+            </div>
+            <div class="footer-item" id="nav-analytics">
+                <img src="https://via.placeholder.com/30?text=📊" alt="">
+                <span>Analytics</span>
+            </div>
+            <div class="footer-item" id="nav-tracker">
+                <img src="https://via.placeholder.com/30?text=📍" alt="">
+                <span>Tracker</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
