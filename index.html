@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chorahis World Loans</title>
+    <title>Sohaib Mobile</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
@@ -13,16 +14,30 @@
 <body>
     <div id="app">
         <header>
-            <div class="app-title">Sohaib Mobile </div>
-            <div class="hamburger-menu" id="hamburger-menu">
-                &#9776; </div>
+            <div class="app-title">Sohaib Mobile</div>
+            <div class="hamburger-menu" id="hamburger-menu">&#9776;</div>
         </header>
 
         <nav id="side-nav" class="side-nav">
             <a href="#" class="close-btn" id="close-side-nav">&times;</a>
             <a href="#" id="side-nav-admin">Admin Login</a>
+            <a href="#" id="side-nav-about">About Developer</a>
             <a href="#" id="side-nav-logout" style="display: none;">Logout</a>
-            </nav>
+        </nav>
+
+        <!-- Loading overlay -->
+        <div id="loading-overlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Processing your request...</p>
+        </div>
+
+        <!-- Success popup -->
+        <div id="success-popup" class="popup" style="display: none;">
+            <div class="popup-content">
+                <span class="popup-close" id="close-popup">&times;</span>
+                <p id="popup-message"></p>
+            </div>
+        </div>
 
         <div id="auth-page" class="page">
             <div class="card auth-card">
@@ -47,6 +62,29 @@
         <div id="welcome-page" class="page" style="display: none;">
             <div class="card welcome-card">
                 <h1>Welcome to Sohaib Mobile!</h1>
+                <div style="text-align: center; margin: 15px 0;">
+                    <a href="#about-page" onclick="document.getElementById('about-page').style.display='block'; document.getElementById('welcome-page').style.display='none';" 
+                       style="display: inline-block;
+                              padding: 10px 25px;
+                              color: #3498db;
+                              text-decoration: none;
+                              font-weight: 500;
+                              border: 2px solid #3498db;
+                              border-radius: 30px;
+                              transition: all 0.3s ease;
+                              position: relative;
+                              overflow: hidden;">
+                        <span style="position: relative; z-index: 2;">Know Me</span>
+                        <span style="position: absolute;
+                                    top: 0;
+                                    left: -100%;
+                                    width: 100%;
+                                    height: 100%;
+                                    background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.2), transparent);
+                                    transition: all 0.5s ease;
+                                    z-index: 1;"></span>
+                    </a>
+                </div>
                 <div class="image-slider-container">
                     <img id="slider-image" src="download.webp" alt="Loan Promotion">
                 </div>
@@ -63,73 +101,134 @@
             </div>
         </div>
 
-        <div id="youth-loan-page" class="page" style="display: none;">
-            <div class="card">
-                <h2>Youth Business Loan Application</h2>
-                <form id="youth-loan-form">
-                    <label for="youth-cnic-front">CNIC Front:</label>
-                    <input type="file" id="youth-cnic-front" accept="image/*" required>
+       <div id="youth-loan-page" class="page" style="display: none;">
+    <div class="card">
+        <h2>Youth Business Loan Application</h2>
+        <form id="youth-loan-form" onsubmit="event.preventDefault(); document.getElementById('youth-loan-success-popup').style.display='block';">
+            <label for="youth-cnic-front">CNIC Front:</label>
+            <input type="file" id="youth-cnic-front" accept="image/*" required>
 
-                    <label for="youth-cnic-back">CNIC Back:</label>
-                    <input type="file" id="youth-cnic-back" accept="image/*" required>
+            <label for="youth-cnic-back">CNIC Back:</label>
+            <input type="file" id="youth-cnic-back" accept="image/*" required>
 
-                    <label for="youth-applicant-pic">Applicant Photo:</label>
-                    <input type="file" id="youth-applicant-pic" accept="image/*" required>
+            <label for="youth-applicant-pic">Applicant Photo:</label>
+            <input type="file" id="youth-applicant-pic" accept="image/*" required>
 
-                    <label for="youth-education">Education:</label>
-                    <input type="text" id="youth-education" placeholder="Highest Education" required>
+            <label for="youth-education">Education:</label>
+            <input type="text" id="youth-education" placeholder="Highest Education" required>
 
-                    <label for="youth-work">Work Experience:</label>
-                    <input type="text" id="youth-work" placeholder="Job Title / Business Type" required>
+            <label for="youth-work">Work Experience:</label>
+            <input type="text" id="youth-work" placeholder="Job Title / Business Type" required>
 
-                    <label for="youth-mobile">Mobile Number:</label>
-                    <input type="tel" id="youth-mobile" placeholder="e.g., 03XX-XXXXXXX" required>
+            <label for="youth-mobile">Mobile Number:</label>
+            <input type="tel" id="youth-mobile" placeholder="e.g., 03XX-XXXXXXX" required>
 
-                    <label for="youth-cnic-number">CNIC Number (for tracking):</label>
-                    <input type="text" id="youth-cnic-number" placeholder="e.g., XXXXX-XXXXXXX-X" required>
+            <label for="youth-cnic-number">CNIC Number (for tracking):</label>
+            <input type="text" id="youth-cnic-number" placeholder="e.g., XXXXX-XXXXXXX-X" required>
 
-                    <button type="submit">Submit Application</button>
-                </form>
-            </div>
-        </div>
+            <button type="submit">Submit Application</button>
+        </form>
+    </div>
+
+    <!-- Success Popup (initially hidden) -->
+    <div id="youth-loan-success-popup" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #4CAF50;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000;
+        text-align: center;
+        max-width: 80%;
+        width: 300px;
+    ">
+        <h3 style="margin-top: 0;">Success!</h3>
+        <p>Your application has been submitted successfully.</p>
+        <button onclick="document.getElementById('youth-loan-success-popup').style.display='none'" style="
+            background-color: white;
+            color: #4CAF50;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+        ">OK</button>
+    </div>
+</div>
 
         <div id="ghar-loan-page" class="page" style="display: none;">
-            <div class="card">
-                <h2>Apna Ghar Apni Chat Loan Application</h2>
-                <form id="ghar-loan-form">
-                    <label for="ghar-cnic-front">Applicant CNIC Front:</label>
-                    <input type="file" id="ghar-cnic-front" accept="image/*" required>
+    <div class="card">
+        <h2>Apna Ghar Apni Chat Loan Application</h2>
+        <form id="ghar-loan-form" onsubmit="event.preventDefault(); document.getElementById('ghar-loan-success-popup').style.display='block';">
+            <label for="ghar-cnic-front">Applicant CNIC Front:</label>
+            <input type="file" id="ghar-cnic-front" accept="image/*" required>
 
-                    <label for="ghar-cnic-back">Applicant CNIC Back:</label>
-                    <input type="file" id="ghar-cnic-back" accept="image/*" required>
+            <label for="ghar-cnic-back">Applicant CNIC Back:</label>
+            <input type="file" id="ghar-cnic-back" accept="image/*" required>
 
-                    <label for="ghar-relative-cnic-front">Husband/Father/Wife CNIC Front:</label>
-                    <input type="file" id="ghar-relative-cnic-front" accept="image/*" required>
+            <label for="ghar-relative-cnic-front">Husband/Father/Wife CNIC Front:</label>
+            <input type="file" id="ghar-relative-cnic-front" accept="image/*" required>
 
-                    <label for="ghar-mobile1">Mobile Number 1:</label>
-                    <input type="tel" id="ghar-mobile1" placeholder="e.g., 03XX-XXXXXXX" required>
+            <label for="ghar-mobile1">Mobile Number 1:</label>
+            <input type="tel" id="ghar-mobile1" placeholder="e.g., 03XX-XXXXXXX" required>
 
-                    <label for="ghar-mobile2">Mobile Number 2:</label>
-                    <input type="tel" id="ghar-mobile2" placeholder="e.g., 03XX-XXXXXXX">
+            <label for="ghar-mobile2">Mobile Number 2:</label>
+            <input type="tel" id="ghar-mobile2" placeholder="e.g., 03XX-XXXXXXX">
 
-                    <label for="ghar-plot-registry">Plot Registry:</label>
-                    <input type="file" id="ghar-plot-registry" accept="image/*" required>
+            <label for="ghar-plot-registry">Plot Registry:</label>
+            <input type="file" id="ghar-plot-registry" accept="image/*" required>
 
-                    <label for="ghar-cnic-number">CNIC Number (for tracking):</label>
-                    <input type="text" id="ghar-cnic-number" placeholder="e.g., XXXXX-XXXXXXX-X" required>
+            <label for="ghar-cnic-number">CNIC Number (for tracking):</label>
+            <input type="text" id="ghar-cnic-number" placeholder="e.g., XXXXX-XXXXXXX-X" required>
 
-                    <button type="submit">Submit Application</button>
-                </form>
-            </div>
-        </div>
+            <button type="submit">Submit Application</button>
+        </form>
+    </div>
+
+    <!-- Success Popup (initially hidden) -->
+    <div id="ghar-loan-success-popup" style="
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #4CAF50;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000;
+        text-align: center;
+        max-width: 80%;
+        width: 300px;
+    ">
+        <h3 style="margin-top: 0;">Success!</h3>
+        <p>Your Apna Ghar Apni Chat loan application has been submitted successfully.</p>
+        <button onclick="document.getElementById('ghar-loan-success-popup').style.display='none'" style="
+            background-color: white;
+            color: #4CAF50;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+        ">OK</button>
+    </div>
+</div>
 
         <div id="tracker-page" class="page" style="display: none;">
             <div class="card">
                 <h2>Application Tracker</h2>
                 <input type="text" id="tracker-cnic" placeholder="Enter your CNIC Number">
                 <button id="tracker-search-btn">Search Application</button>
-                <div id="tracker-results">
-                    </div>
+                <div id="tracker-results"></div>
             </div>
         </div>
 
@@ -166,6 +265,79 @@
             </div>
         </div>
 
+        <div id="about-page" class="page" style="display: none;">
+            <div class="card">
+                <div class="about-header">
+                    <img src="https://i.imgur.com/Jf6yJ4W.jpg" alt="Developer Photo" class="developer-photo">
+                    <h2>Sohaib Mobile</h2>
+                    <p class="developer-title">Loan Application Developer</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3><i class="fas fa-user"></i> About Me</h3>
+                    <p>Hello! I'm the developer behind this loan application platform. With 3+ years of experience in fintech solutions, I've built this app to simplify the loan application process for Pakistani citizens.</p>
+                </div>
+                <div class="about-section" style="
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 400px;
+    margin: 20px auto;
+">
+    <h3 style="
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 22px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    ">
+        <i class="fas fa-mobile-alt" style="color: #3498db;"></i> Contact Us
+    </h3>
+    
+    <a href="https://wa.me/923434530019" style="
+        display: block;
+        background-color: #25D366;
+        color: white;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        font-weight: 500;
+    " class="contact-link whatsapp" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)'" 
+    onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)'">
+        <i class="fab fa-whatsapp" style="margin-right: 10px; font-size: 18px;"></i> WhatsApp: 03434530019
+    </a>
+    
+    <a href="mailto:sohaibmobile@example.com" style="
+        display: block;
+        background-color: #3498db;
+        color: white;
+        padding: 12px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        font-weight: 500;
+    " class="contact-link email" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 12px rgba(0,0,0,0.15)'" 
+    onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)'">
+        <i class="fas fa-envelope" style="margin-right: 10px; font-size: 18px;"></i> Email: sohaibmobile@example.com
+    </a>
+</div>
+                
+                <div class="about-section">
+                    <h3><i class="fas fa-lock"></i> Privacy Commitment</h3>
+                    <p>Your data security is my top priority. All information is encrypted and never shared with third parties.</p>
+                </div>
+            </div>
+        </div>
+
         <div id="admin-login-modal" class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close-button" id="close-admin-modal">&times;</span>
@@ -179,27 +351,26 @@
         <div id="admin-page" class="page" style="display: none;">
             <div class="card">
                 <h2>Admin Panel</h2>
-                <div id="admin-applications">
-                    </div>
+                <div id="admin-applications"></div>
                 <button id="admin-logout-btn">Logout Admin</button>
             </div>
         </div>
 
-        <div class="footer">
+        <div class="footer" id="footer-nav" style="display: none;">
             <div class="footer-item" id="nav-welcome">
-                <img src="https://via.placeholder.com/30?text=🏠" alt="">
+                <i class="fas fa-home"></i>
                 <span>Welcome</span>
             </div>
             <div class="footer-item" id="nav-eligibility">
-                <img src="https://via.placeholder.com/30?text=✔️" alt="">
+                <i class="fas fa-check-circle"></i>
                 <span>Eligibility</span>
             </div>
             <div class="footer-item" id="nav-analytics">
-                <img src="https://via.placeholder.com/30?text=📊" alt="">
+                <i class="fas fa-chart-bar"></i>
                 <span>Analytics</span>
             </div>
             <div class="footer-item" id="nav-tracker">
-                <img src="https://via.placeholder.com/30?text=📍" alt="">
+                <i class="fas fa-search-location"></i>
                 <span>Tracker</span>
             </div>
         </div>
