@@ -140,6 +140,7 @@ closePopup.addEventListener('click', () => {
     successPopup.style.display = 'none';
 });
 
+// --- Optimized Image Upload Function ---
 async function uploadImageToCloudinary(file) {
     if (!file) return null;
 
@@ -154,11 +155,7 @@ async function uploadImageToCloudinary(file) {
             body: formData
         });
         const data = await response.json();
-        if (data.secure_url) {
-            return data.secure_url;
-        } else {
-            throw new Error('Cloudinary upload failed: ' + (data.error ? data.error.message : 'Unknown error'));
-        }
+        return data.secure_url || null;
     } catch (error) {
         console.error("Error uploading to Cloudinary:", error);
         return null;
@@ -209,7 +206,7 @@ adminLoginBtn.addEventListener('click', () => {
         setTimeout(() => adminLoginPage.style.display = 'none', 300);
         showPage(adminPage);
         loadAdminApplications();
-        footerNav.style.display = 'none'; // Hide footer for admin
+        footerNav.style.display = 'none';
     } else {
         adminLoginError.textContent = 'Incorrect password.';
         adminLoginError.style.display = 'block';
@@ -245,7 +242,7 @@ function checkUserStatus() {
         loadAdminApplications();
         sideNavAdmin.style.display = 'none';
         sideNavLogout.style.display = 'block';
-        footerNav.style.display = 'none'; // Hide footer for admin
+        footerNav.style.display = 'none';
         return;
     }
 
@@ -256,7 +253,7 @@ function checkUserStatus() {
         incrementAppViews();
         sideNavAdmin.style.display = 'block';
         sideNavLogout.style.display = 'block';
-        footerNav.style.display = 'flex'; // Show footer for logged in users
+        footerNav.style.display = 'flex';
     } else {
         currentUser = null;
         isAdminLoggedIn = false;
@@ -264,7 +261,7 @@ function checkUserStatus() {
         showRegisterSection();
         sideNavAdmin.style.display = 'block';
         sideNavLogout.style.display = 'none';
-        footerNav.style.display = 'none'; // Hide footer for non-logged in users
+        footerNav.style.display = 'none';
     }
 }
 
@@ -405,6 +402,7 @@ apnaGharApniChatLoanCard.addEventListener('click', () => {
     showPage(gharLoanPage);
 });
 
+// Optimized Youth Loan Application Submission
 youthLoanForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) {
@@ -416,20 +414,25 @@ youthLoanForm.addEventListener('submit', async (e) => {
     showLoading();
     
     try {
+        // Get form data
+        const education = youthEducationInput.value.trim();
+        const work = youthWorkInput.value.trim();
+        const mobileNumber = youthMobileInput.value.trim();
+        const cnicNumber = youthCnicNumberInput.value.trim();
         const cnicFrontFile = youthCnicFrontInput.files[0];
         const cnicBackFile = youthCnicBackInput.files[0];
         const applicantPicFile = youthApplicantPicInput.files[0];
 
-        // First store text data
+        // First store text data immediately
         const applicationData = {
             userId: currentUser.uid,
             username: currentUser.username,
             email: currentUser.email,
             loanType: 'Youth Business Loan',
-            education: youthEducationInput.value.trim(),
-            work: youthWorkInput.value.trim(),
-            mobileNumber: youthMobileInput.value.trim(),
-            cnicNumber: youthCnicNumberInput.value.trim(),
+            education: education,
+            work: work,
+            mobileNumber: mobileNumber,
+            cnicNumber: cnicNumber,
             status: 'Pending',
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             cnicFrontUrl: 'uploading',
@@ -437,26 +440,22 @@ youthLoanForm.addEventListener('submit', async (e) => {
             applicantPicUrl: 'uploading'
         };
 
+        // Create application record immediately
         const newApplicationRef = database.ref('applications').push();
         await newApplicationRef.set(applicationData);
 
-        // Upload images
-        const [cnicFrontUrl, cnicBackUrl, applicantPicUrl] = await Promise.all([
-            uploadImageToCloudinary(cnicFrontFile),
-            uploadImageToCloudinary(cnicBackFile),
-            uploadImageToCloudinary(applicantPicFile)
-        ]);
-
-        // Update with image URLs
-        await newApplicationRef.update({
-            cnicFrontUrl: cnicFrontUrl || 'failed',
-            cnicBackUrl: cnicBackUrl || 'failed',
-            applicantPicUrl: applicantPicUrl || 'failed'
-        });
-
+        // Show success message immediately (don't wait for image uploads)
         showSuccessPopup("Youth Business Loan application submitted successfully!");
         youthLoanForm.reset();
         showPage(welcomePage);
+
+        // Upload images in background and update record when complete
+        uploadImagesAndUpdateRecord(newApplicationRef, {
+            cnicFrontFile,
+            cnicBackFile,
+            applicantPicFile
+        });
+
     } catch (error) {
         console.error("Error submitting youth loan application:", error);
         showSuccessPopup("Error submitting application. Please try again.");
@@ -465,6 +464,7 @@ youthLoanForm.addEventListener('submit', async (e) => {
     }
 });
 
+// Optimized Ghar Loan Application Submission
 gharLoanForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) {
@@ -476,20 +476,24 @@ gharLoanForm.addEventListener('submit', async (e) => {
     showLoading();
     
     try {
+        // Get form data
+        const mobileNumber1 = gharMobile1Input.value.trim();
+        const mobileNumber2 = gharMobile2Input.value.trim();
+        const cnicNumber = gharCnicNumberInput.value.trim();
         const cnicFrontFile = gharCnicFrontInput.files[0];
         const cnicBackFile = gharCnicBackInput.files[0];
         const relativeCnicFrontFile = gharRelativeCnicFrontInput.files[0];
         const plotRegistryFile = gharPlotRegistryInput.files[0];
 
-        // First store text data
+        // First store text data immediately
         const applicationData = {
             userId: currentUser.uid,
             username: currentUser.username,
             email: currentUser.email,
             loanType: 'Apna Ghar Apni Chat Loan',
-            mobileNumber1: gharMobile1Input.value.trim(),
-            mobileNumber2: gharMobile2Input.value.trim(),
-            cnicNumber: gharCnicNumberInput.value.trim(),
+            mobileNumber1: mobileNumber1,
+            mobileNumber2: mobileNumber2,
+            cnicNumber: cnicNumber,
             status: 'Pending',
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             cnicFrontUrl: 'uploading',
@@ -498,28 +502,23 @@ gharLoanForm.addEventListener('submit', async (e) => {
             plotRegistryUrl: 'uploading'
         };
 
+        // Create application record immediately
         const newApplicationRef = database.ref('applications').push();
         await newApplicationRef.set(applicationData);
 
-        // Upload images
-        const [cnicFrontUrl, cnicBackUrl, relativeCnicFrontUrl, plotRegistryUrl] = await Promise.all([
-            uploadImageToCloudinary(cnicFrontFile),
-            uploadImageToCloudinary(cnicBackFile),
-            uploadImageToCloudinary(relativeCnicFrontFile),
-            uploadImageToCloudinary(plotRegistryFile)
-        ]);
-
-        // Update with image URLs
-        await newApplicationRef.update({
-            cnicFrontUrl: cnicFrontUrl || 'failed',
-            cnicBackUrl: cnicBackUrl || 'failed',
-            relativeCnicFrontUrl: relativeCnicFrontUrl || 'failed',
-            plotRegistryUrl: plotRegistryUrl || 'failed'
-        });
-
+        // Show success message immediately (don't wait for image uploads)
         showSuccessPopup("Apna Ghar Apni Chat Loan application submitted successfully!");
         gharLoanForm.reset();
         showPage(welcomePage);
+
+        // Upload images in background and update record when complete
+        uploadImagesAndUpdateRecord(newApplicationRef, {
+            cnicFrontFile,
+            cnicBackFile,
+            relativeCnicFrontFile,
+            plotRegistryFile
+        });
+
     } catch (error) {
         console.error("Error submitting ghar loan application:", error);
         showSuccessPopup("Error submitting application. Please try again.");
@@ -527,6 +526,48 @@ gharLoanForm.addEventListener('submit', async (e) => {
         hideLoading();
     }
 });
+
+// Helper function to handle background image uploads
+async function uploadImagesAndUpdateRecord(applicationRef, files) {
+    try {
+        const updates = {};
+        const uploadPromises = [];
+        
+        // Process each file
+        for (const [fieldName, file] of Object.entries(files)) {
+            if (file) {
+                uploadPromises.push(
+                    uploadImageToCloudinary(file)
+                        .then(url => {
+                            if (url) {
+                                updates[`${fieldName.replace('File', 'Url')}`] = url;
+                            } else {
+                                updates[`${fieldName.replace('File', 'Url')}`] = 'failed';
+                            }
+                        })
+                );
+            }
+        }
+
+        // Wait for all uploads to complete
+        await Promise.all(uploadPromises);
+        
+        // Update application with image URLs
+        await applicationRef.update(updates);
+        
+        console.log("All images uploaded and application updated");
+    } catch (error) {
+        console.error("Error uploading images:", error);
+        // Mark failed uploads
+        const updates = {};
+        for (const fieldName in files) {
+            if (files[fieldName]) {
+                updates[`${fieldName.replace('File', 'Url')}`] = 'failed';
+            }
+        }
+        await applicationRef.update(updates);
+    }
+}
 
 // --- Application Tracker Logic ---
 trackerSearchBtn.addEventListener('click', async () => {
@@ -773,6 +814,78 @@ navAnalytics.addEventListener('click', () => {
     loadAnalyticsData();
 });
 navTracker.addEventListener('click', () => showPage(trackerPage));
+// Enhanced PWA Installation Logic
+        let deferredPrompt;
+        const installContainer = document.getElementById('install-container');
+        const installBtn = document.getElementById('install-btn');
+
+        // Show install button for mobile devices immediately
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            installContainer.style.display = 'block';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installContainer.style.display = 'block';
+            console.log('beforeinstallprompt event fired');
+            
+            // Update button text for clarity
+            installBtn.innerHTML = '<i class="fas fa-download"></i> Install App';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response: ${outcome}`);
+                
+                if (outcome === 'accepted') {
+                    showSuccessPopup('App installation started!');
+                }
+                deferredPrompt = null;
+                installContainer.style.display = 'none';
+            } else {
+                // Provide device-specific instructions
+                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    showSuccessPopup('For iOS: Tap Share → "Add to Home Screen"');
+                } else if (/Android/i.test(navigator.userAgent)) {
+                    showSuccessPopup('For Android: Tap the 3-dot menu → "Install App"');
+                } else {
+                    showSuccessPopup('Look for the install icon in your browser address bar');
+                }
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('App installed successfully');
+            installContainer.style.display = 'none';
+        });
+
+        // Detect if running as PWA
+        function detectStandaloneMode() {
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone) {
+                installContainer.style.display = 'none';
+            }
+        }
+
+        // Check on load and when display mode changes
+        window.addEventListener('load', detectStandaloneMode);
+        window.matchMedia('(display-mode: standalone)').addEventListener('change', detectStandaloneMode);
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(err => {
+                        console.log('SW registration failed: ', err);
+                    });
+            });
+        }
 
 // --- Initial App Load ---
 document.addEventListener('DOMContentLoaded', () => {
