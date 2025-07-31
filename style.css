@@ -131,6 +131,11 @@ header {
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
+/* Initially show only auth page for new users */
+#auth-page {
+    display: block;
+}
+
 .card {
     background-color: var(--background-card);
     padding: 25px;
@@ -223,7 +228,6 @@ button:disabled {
     transform: none;
 }
 
-
 .link {
     color: var(--primary-color);
     cursor: pointer;
@@ -304,6 +308,93 @@ button:disabled {
     margin: 0;
 }
 
+/* Loading Overlay */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+    color: white;
+}
+
+.loading-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid white;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success Popup */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.popup.show {
+    opacity: 1;
+}
+
+.popup-content {
+    background-color: var(--background-card);
+    padding: 25px;
+    border-radius: 15px;
+    width: 85%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.popup.show .popup-content {
+    transform: translateY(0);
+}
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.popup-close:hover {
+    color: var(--danger-color);
+}
+
+#popup-message {
+    font-size: 1.1em;
+    margin: 15px 0;
+    color: var(--text-dark);
+}
 
 /* Tracker Page */
 #tracker-results div {
@@ -434,7 +525,6 @@ button:disabled {
 .application-item button.reject-btn { background-color: var(--danger-color); }
 .application-item button.reject-btn:hover { background-color: #c9302c; }
 
-
 .application-item .status-pending { background-color: #ffc107; color: var(--text-dark); padding: 5px 10px; border-radius: 5px; font-weight: 600; }
 .application-item .status-approve { background-color: var(--accent-color); color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600; }
 .application-item .status-reject { background-color: var(--danger-color); color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600; }
@@ -451,7 +541,72 @@ button:disabled {
 .application-item .document-link:hover {
     color: #3a7bcc;
 }
+/* Admin Login Modal */
+#admin-login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
 
+.modal-content {
+    background-color: var(--background-card);
+    padding: 30px;
+    border-radius: 15px;
+    width: 85%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+#admin-password-input {
+    width: 100%;
+    padding: 12px;
+    margin: 20px 0;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+#admin-login-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: var(--secondary-color);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover {
+    color: var(--danger-color);
+}
+
+.error-message {
+    color: var(--danger-color);
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+/* About Page Styles */ 
+ 
 /* Footer Navigation */
 .footer {
     position: fixed;
@@ -460,7 +615,7 @@ button:disabled {
     transform: translateX(-50%); /* Adjust for centering */
     width: 100%;
     max-width: 420px; /* Match app max-width */
-    display: flex;
+    display: flex; /* Changed to flex - will be toggled via JS */
     justify-content: space-around;
     align-items: center;
     background-color: var(--primary-color);
@@ -485,12 +640,10 @@ button:disabled {
     -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
-.footer-item img {
-    width: 26px; /* Slightly smaller icons */
-    height: 26px;
+.footer-item i {
+    font-size: 1.5em;
     margin-bottom: 5px;
-    filter: invert(100%) saturate(0%); /* Make icons white */
-    transition: filter 0.3s ease, transform 0.2s ease;
+    transition: transform 0.3s ease;
 }
 
 .footer-item span {
@@ -508,87 +661,11 @@ button:disabled {
     background-color: rgba(255, 255, 255, 0.25);
 }
 
-.footer-item:hover img {
+.footer-item:hover i {
     transform: scale(1.1);
-    filter: invert(100%) saturate(100%); /* Maintain white icon */
 }
 
-
-/* Modals */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.7); /* Darker overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.3s ease; /* Fade in/out effect */
-    opacity: 0; /* Start hidden */
-}
-
-.modal.show {
-    opacity: 1;
-}
-
-.modal-content {
-    background-color: var(--background-card);
-    padding: 30px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 380px;
-    position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    text-align: center;
-    transform: translateY(-20px); /* Start slightly above center */
-    transition: transform 0.3s ease, opacity 0.3s ease; /* Slide and fade in */
-}
-
-.modal.show .modal-content {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.modal-content h2 {
-    color: var(--primary-color);
-    margin-bottom: 25px;
-    font-size: 1.8em;
-}
-
-.modal-content button {
-    margin-top: 25px;
-    box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3); /* Add shadow to modal button */
-}
-
-.close-button {
-    color: var(--secondary-color);
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 32px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: var(--danger-color);
-    transform: rotate(90deg);
-}
-
-.error-message {
-    color: var(--danger-color);
-    font-size: 0.95em;
-    margin-top: 15px;
-    font-weight: 500;
-}
-
-/* Responsive Adjustments (Optional, as max-width handles most of it) */
+/* Responsive Adjustments */
 @media (max-height: 700px) { /* For shorter screens */
     .page {
         padding-top: 15px;
