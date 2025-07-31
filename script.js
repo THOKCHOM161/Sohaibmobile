@@ -1,4 +1,3 @@
-// Firebase Configuration (from your prompt)
 const firebaseConfig = {
     apiKey: "AIzaSyDoDPdqHhMslOkCha0MapGRyYRUdhUZbfM",
     authDomain: "papa-30f39.firebaseapp.com",
@@ -9,15 +8,13 @@ const firebaseConfig = {
     appId: "1:332748602419:web:d6d49d51cd6ac25a847746"
 };
 
-// Cloudinary Configuration (from your prompt)
+// Cloudinary Configuration
 const CLOUDINARY_CLOUD_NAME = 'dtbftpnkq';
 const CLOUDINARY_API_KEY = '543627576256858';
 const CLOUDINARY_UPLOAD_PRESET = 'Lavaithan';
-// WARNING: Exposing API Secret on client-side is INSECURE and should NOT be done in production.
-// This is included as per your request but for real apps, use server-side signed uploads.
 const CLOUDINARY_API_SECRET = 'wtkB1cxJypNvO3CguCb-NsGy7bk'; 
 
-// Admin password (INSECURE: Hardcoded in client-side code)
+// Admin password
 const ADMIN_PASSWORD = 'Lavaithan';
 
 // Initialize Firebase
@@ -55,7 +52,6 @@ const youthWorkInput = document.getElementById('youth-work');
 const youthMobileInput = document.getElementById('youth-mobile');
 const youthCnicNumberInput = document.getElementById('youth-cnic-number');
 
-
 const gharLoanPage = document.getElementById('ghar-loan-page');
 const gharLoanForm = document.getElementById('ghar-loan-form');
 const gharCnicFrontInput = document.getElementById('ghar-cnic-front');
@@ -65,7 +61,6 @@ const gharMobile1Input = document.getElementById('ghar-mobile1');
 const gharMobile2Input = document.getElementById('ghar-mobile2');
 const gharPlotRegistryInput = document.getElementById('ghar-plot-registry');
 const gharCnicNumberInput = document.getElementById('ghar-cnic-number');
-
 
 const trackerPage = document.getElementById('tracker-page');
 const trackerCnicInput = document.getElementById('tracker-cnic');
@@ -83,15 +78,17 @@ const submitFeedbackBtn = document.getElementById('submit-feedback-btn');
 const feedbackStatusDiv = document.getElementById('feedback-status');
 
 const eligibilityPage = document.getElementById('eligibility-page');
+const aboutPage = document.getElementById('about-page');
 
 // Admin related DOM elements
 const hamburgerMenu = document.getElementById('hamburger-menu');
 const sideNav = document.getElementById('side-nav');
 const closeSideNav = document.getElementById('close-side-nav');
 const sideNavAdmin = document.getElementById('side-nav-admin');
-const sideNavLogout = document.getElementById('side-nav-logout'); // New for side nav
+const sideNavAbout = document.getElementById('side-nav-about');
+const sideNavLogout = document.getElementById('side-nav-logout');
 
-const adminLoginPage = document.getElementById('admin-login-modal'); // This is now a modal
+const adminLoginPage = document.getElementById('admin-login-modal');
 const adminPasswordInput = document.getElementById('admin-password-input');
 const adminLoginBtn = document.getElementById('admin-login-btn');
 const adminLoginError = document.getElementById('admin-login-error');
@@ -99,31 +96,57 @@ const closeAdminModal = document.getElementById('close-admin-modal');
 
 const adminPage = document.getElementById('admin-page');
 const adminApplicationsDiv = document.getElementById('admin-applications');
-const adminLogoutBtn = document.getElementById('admin-logout-btn'); // For main admin page logout
-
+const adminLogoutBtn = document.getElementById('admin-logout-btn');
 
 const navWelcome = document.getElementById('nav-welcome');
 const navEligibility = document.getElementById('nav-eligibility');
 const navAnalytics = document.getElementById('nav-analytics');
 const navTracker = document.getElementById('nav-tracker');
+const footerNav = document.getElementById('footer-nav');
 
-let currentUser = null; // Stores current logged-in user's data (username, email, uid)
-let isAdminLoggedIn = false; // Tracks if admin session is active
+// Loading and popup elements
+const loadingOverlay = document.getElementById('loading-overlay');
+const successPopup = document.getElementById('success-popup');
+const popupMessage = document.getElementById('popup-message');
+const closePopup = document.getElementById('close-popup');
+
+let currentUser = null;
+let isAdminLoggedIn = false;
 
 // --- Utility Functions ---
 function showPage(pageElement) {
     document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
     pageElement.style.display = 'block';
-    closeNav(); // Close side nav when page changes
+    closeNav();
 }
 
+function showLoading() {
+    loadingOverlay.style.display = 'flex';
+}
+
+function hideLoading() {
+    loadingOverlay.style.display = 'none';
+}
+
+function showSuccessPopup(message) {
+    popupMessage.textContent = message;
+    successPopup.style.display = 'flex';
+    setTimeout(() => {
+        successPopup.style.display = 'none';
+    }, 3000);
+}
+
+closePopup.addEventListener('click', () => {
+    successPopup.style.display = 'none';
+});
+
 async function uploadImageToCloudinary(file) {
-    if (!file) return null; // Handle case where no file is selected
+    if (!file) return null;
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('api_key', CLOUDINARY_API_KEY); // Included as requested. INSECURE for production.
+    formData.append('api_key', CLOUDINARY_API_KEY);
 
     try {
         const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
@@ -138,19 +161,13 @@ async function uploadImageToCloudinary(file) {
         }
     } catch (error) {
         console.error("Error uploading to Cloudinary:", error);
-        alert("Failed to upload image. Please try again.");
         return null;
     }
 }
 
-function showPopup(message) {
-    alert(message); // Simple alert for popup
-}
-
 // --- Side Navigation and Admin Logic ---
 function openNav() {
-    sideNav.style.width = "250px"; // Open the side navigation
-    // Conditionally show/hide logout in side nav
+    sideNav.style.width = "250px";
     if (currentUser || isAdminLoggedIn) {
         sideNavLogout.style.display = 'block';
     } else {
@@ -159,100 +176,104 @@ function openNav() {
 }
 
 function closeNav() {
-    sideNav.style.width = "0"; // Close the side navigation
+    sideNav.style.width = "0";
 }
 
 hamburgerMenu.addEventListener('click', openNav);
 closeSideNav.addEventListener('click', closeNav);
 
-// Admin login from side navigation
 sideNavAdmin.addEventListener('click', () => {
-    closeNav(); // Close the side nav
-    adminLoginPage.style.display = 'flex'; // Show the modal container immediately
-    adminPasswordInput.value = ''; // Clear password field
-    adminLoginError.style.display = 'none'; // Hide error message
-    // Add 'show' class to modal for transition effect
-    setTimeout(() => adminLoginPage.classList.add('show'), 10); // Small delay for display:flex to take effect before transition
+    closeNav();
+    adminLoginPage.style.display = 'flex';
+    adminPasswordInput.value = '';
+    adminLoginError.style.display = 'none';
+    setTimeout(() => adminLoginPage.classList.add('show'), 10);
+});
+
+sideNavAbout.addEventListener('click', () => {
+    closeNav();
+    showPage(aboutPage);
 });
 
 closeAdminModal.addEventListener('click', () => {
-    adminLoginPage.classList.remove('show'); // Remove 'show' class to trigger fade out
-    setTimeout(() => adminLoginPage.style.display = 'none', 300); // Hide after transition (0.3s defined in CSS)
+    adminLoginPage.classList.remove('show');
+    setTimeout(() => adminLoginPage.style.display = 'none', 300);
 });
 
-// Admin Login Button in modal
 adminLoginBtn.addEventListener('click', () => {
     const enteredPassword = adminPasswordInput.value;
     if (enteredPassword === ADMIN_PASSWORD) {
         isAdminLoggedIn = true;
-        localStorage.setItem('isAdminLoggedIn', 'true'); // Persist admin status
-        adminLoginPage.classList.remove('show'); // Hide modal
+        localStorage.setItem('isAdminLoggedIn', 'true');
+        adminLoginPage.classList.remove('show');
         setTimeout(() => adminLoginPage.style.display = 'none', 300);
-        showPage(adminPage); // Go to admin page
+        showPage(adminPage);
         loadAdminApplications();
+        footerNav.style.display = 'none'; // Hide footer for admin
     } else {
         adminLoginError.textContent = 'Incorrect password.';
         adminLoginError.style.display = 'block';
     }
 });
 
-// Admin logout from admin page
 adminLogoutBtn.addEventListener('click', () => {
     isAdminLoggedIn = false;
     localStorage.removeItem('isAdminLoggedIn');
-    showPopup('Admin logged out.');
-    checkUserStatus(); // Re-check user status to go to appropriate page (auth or welcome)
+    showSuccessPopup('Admin logged out.');
+    checkUserStatus();
 });
 
-// Logout from side nav
 sideNavLogout.addEventListener('click', () => {
     if (isAdminLoggedIn) {
-        adminLogoutBtn.click(); // Trigger admin logout logic
+        adminLogoutBtn.click();
     } else if (currentUser) {
-        navLogoutUser(); // Trigger regular user logout logic
+        navLogoutUser();
     }
     closeNav();
 });
 
-
-// --- User Authentication Logic (Custom - INSECURE for production) ---
+// --- User Authentication Logic ---
 function checkUserStatus() {
     const storedUser = localStorage.getItem('currentUser');
     const storedAdminStatus = localStorage.getItem('isAdminLoggedIn');
+
+    document.querySelectorAll('.page').forEach(page => page.style.display = 'none');
 
     if (storedAdminStatus === 'true') {
         isAdminLoggedIn = true;
         showPage(adminPage);
         loadAdminApplications();
-        sideNavAdmin.style.display = 'none'; // Hide admin login if already logged in
+        sideNavAdmin.style.display = 'none';
         sideNavLogout.style.display = 'block';
-        return; // Admin takes precedence
+        footerNav.style.display = 'none'; // Hide footer for admin
+        return;
     }
 
     if (storedUser) {
         currentUser = JSON.parse(storedUser);
         showPage(welcomePage);
         startImageSlider();
-        incrementAppViews(); // Increment views on successful user login/welcome
-        sideNavAdmin.style.display = 'block'; // Show admin login option for regular users
+        incrementAppViews();
+        sideNavAdmin.style.display = 'block';
         sideNavLogout.style.display = 'block';
+        footerNav.style.display = 'flex'; // Show footer for logged in users
     } else {
         currentUser = null;
-        isAdminLoggedIn = false; // Ensure admin status is false if no user
+        isAdminLoggedIn = false;
         showPage(authPage);
         showRegisterSection();
-        sideNavAdmin.style.display = 'block'; // Always show admin login option
+        sideNavAdmin.style.display = 'block';
         sideNavLogout.style.display = 'none';
+        footerNav.style.display = 'none'; // Hide footer for non-logged in users
     }
 }
 
 function navLogoutUser() {
     localStorage.removeItem('currentUser');
     currentUser = null;
-    showPopup('Logged out successfully.');
-    checkUserStatus(); // Redirect to auth page
+    showSuccessPopup('Logged out successfully.');
+    checkUserStatus();
 }
-
 
 function showRegisterSection() {
     registerSection.style.display = 'block';
@@ -270,38 +291,36 @@ registerBtn.addEventListener('click', async () => {
     const password = registerPasswordInput.value.trim();
 
     if (!username || !email || !password) {
-        alert("Please fill in all registration fields.");
+        showSuccessPopup("Please fill in all registration fields.");
         return;
     }
 
-    // Check if email already exists
+    showLoading();
     try {
         const snapshot = await database.ref('users').orderByChild('email').equalTo(email).once('value');
         if (snapshot.exists()) {
-            alert("This email is already registered. Please login or use a different email.");
+            showSuccessPopup("This email is already registered. Please login or use a different email.");
+            hideLoading();
             return;
         }
-    } catch (error) {
-        console.error("Error checking existing user:", error);
-        alert("An error occurred during registration. Please try again.");
-        return;
-    }
 
-    try {
-        const userRef = database.ref('users').push(); // Generate a unique ID for the user
+        const userRef = database.ref('users').push();
         await userRef.set({
             username: username,
             email: email,
-            password: password // INSECURE: Storing plaintext password. Never do this in production.
+            password: password
         });
-        alert("Registration successful! Please login.");
+        
+        showSuccessPopup("Registration successful! Please login.");
         registerUsernameInput.value = '';
         registerEmailInput.value = '';
         registerPasswordInput.value = '';
         showLoginSection();
     } catch (error) {
         console.error("Registration error:", error);
-        alert("Registration failed: " + error.message);
+        showSuccessPopup("Registration failed. Please try again.");
+    } finally {
+        hideLoading();
     }
 });
 
@@ -310,66 +329,67 @@ loginBtn.addEventListener('click', async () => {
     const password = loginPasswordInput.value.trim();
 
     if (!email || !password) {
-        alert("Please enter both email and password.");
+        showSuccessPopup("Please enter both email and password.");
         return;
     }
 
+    showLoading();
     try {
         const usersRef = database.ref('users');
         const snapshot = await usersRef.orderByChild('email').equalTo(email).once('value');
         const userData = snapshot.val();
 
         if (userData) {
-            const userId = Object.keys(userData)[0]; // Get the unique key for the user
+            const userId = Object.keys(userData)[0];
             const user = userData[userId];
 
-            if (user.password === password) { // INSECURE: Plaintext password comparison.
+            if (user.password === password) {
                 currentUser = { uid: userId, username: user.username, email: user.email };
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 loginEmailInput.value = '';
                 loginPasswordInput.value = '';
-                checkUserStatus(); // Go to welcome page
+                checkUserStatus();
             } else {
-                alert("Incorrect password.");
+                showSuccessPopup("Incorrect password.");
             }
         } else {
-            alert("User not found. Please register.");
+            showSuccessPopup("User not found. Please register.");
         }
     } catch (error) {
         console.error("Login error:", error);
-        alert("Login failed: " + error.message);
+        showSuccessPopup("Login failed. Please try again.");
+    } finally {
+        hideLoading();
     }
 });
 
 showLoginLink.addEventListener('click', showLoginSection);
 showRegisterLink.addEventListener('click', showRegisterSection);
 
-
 // --- Welcome Page Slider ---
-// Updated: Use the names of your uploaded images
 const sliderImages = [
-    'download.webp', // Prime Minister Youth Loan Program
-    'happy.webp'     // CM Punjab Maryam Nawaz (Apna Ghar Apni Chat related)
+    'download.webp',
+    'happy.webp'
 ];
 let currentImageIndex = 0;
 let sliderInterval;
 
 function startImageSlider() {
-    clearInterval(sliderInterval); // Clear any existing interval
+    clearInterval(sliderInterval);
     sliderInterval = setInterval(() => {
         currentImageIndex = (currentImageIndex + 1) % sliderImages.length;
-        sliderImage.style.opacity = 0; // Start fade out
+        sliderImage.style.opacity = 0;
         setTimeout(() => {
             sliderImage.src = sliderImages[currentImageIndex];
-            sliderImage.style.opacity = 1; // Fade in
-        }, 1000); // Wait for fade out (1s) before changing src and fading in
-    }, 5000); // Change image every 5 seconds
+            sliderImage.style.opacity = 1;
+        }, 1000);
+    }, 5000);
 }
 
 // --- Loan Application Logic ---
 youthBusinessLoanCard.addEventListener('click', () => {
     if (!currentUser) {
-        alert("Please login to apply for a loan.");
+        showSuccessPopup("Please login to apply for a loan.");
         showPage(authPage);
         return;
     }
@@ -378,7 +398,7 @@ youthBusinessLoanCard.addEventListener('click', () => {
 
 apnaGharApniChatLoanCard.addEventListener('click', () => {
     if (!currentUser) {
-        alert("Please login to apply for a loan.");
+        showSuccessPopup("Please login to apply for a loan.");
         showPage(authPage);
         return;
     }
@@ -388,110 +408,123 @@ apnaGharApniChatLoanCard.addEventListener('click', () => {
 youthLoanForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) {
-        alert("Session expired. Please login to apply for a loan.");
+        showSuccessPopup("Session expired. Please login to apply for a loan.");
         showPage(authPage);
         return;
     }
 
-    showPopup("Uploading documents. Please wait...");
-
-    const cnicFrontFile = youthCnicFrontInput.files[0];
-    const cnicBackFile = youthCnicBackInput.files[0];
-    const applicantPicFile = youthApplicantPicInput.files[0];
-
-    // Upload images concurrently
-    const [cnicFrontUrl, cnicBackUrl, applicantPicUrl] = await Promise.all([
-        uploadImageToCloudinary(cnicFrontFile),
-        uploadImageToCloudinary(cnnicBackFile),
-        uploadImageToCloudinary(applicantPicFile)
-    ]);
-
-    if (!cnicFrontUrl || !cnicBackUrl || !applicantPicUrl) {
-        alert("Failed to upload all required images. Application not submitted.");
-        return;
-    }
-
-    const applicationData = {
-        userId: currentUser.uid,
-        username: currentUser.username,
-        email: currentUser.email,
-        loanType: 'Youth Business Loan',
-        cnicFrontUrl: cnicFrontUrl,
-        cnicBackUrl: cnicBackUrl,
-        applicantPicUrl: applicantPicUrl,
-        education: youthEducationInput.value.trim(),
-        work: youthWorkInput.value.trim(),
-        mobileNumber: youthMobileInput.value.trim(),
-        cnicNumber: youthCnicNumberInput.value.trim(), 
-        status: 'Pending',
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    };
-
+    showLoading();
+    
     try {
+        const cnicFrontFile = youthCnicFrontInput.files[0];
+        const cnicBackFile = youthCnicBackInput.files[0];
+        const applicantPicFile = youthApplicantPicInput.files[0];
+
+        // First store text data
+        const applicationData = {
+            userId: currentUser.uid,
+            username: currentUser.username,
+            email: currentUser.email,
+            loanType: 'Youth Business Loan',
+            education: youthEducationInput.value.trim(),
+            work: youthWorkInput.value.trim(),
+            mobileNumber: youthMobileInput.value.trim(),
+            cnicNumber: youthCnicNumberInput.value.trim(),
+            status: 'Pending',
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            cnicFrontUrl: 'uploading',
+            cnicBackUrl: 'uploading',
+            applicantPicUrl: 'uploading'
+        };
+
         const newApplicationRef = database.ref('applications').push();
         await newApplicationRef.set(applicationData);
-        showPopup("Youth Business Loan application successfully submitted!");
+
+        // Upload images
+        const [cnicFrontUrl, cnicBackUrl, applicantPicUrl] = await Promise.all([
+            uploadImageToCloudinary(cnicFrontFile),
+            uploadImageToCloudinary(cnicBackFile),
+            uploadImageToCloudinary(applicantPicFile)
+        ]);
+
+        // Update with image URLs
+        await newApplicationRef.update({
+            cnicFrontUrl: cnicFrontUrl || 'failed',
+            cnicBackUrl: cnicBackUrl || 'failed',
+            applicantPicUrl: applicantPicUrl || 'failed'
+        });
+
+        showSuccessPopup("Youth Business Loan application submitted successfully!");
         youthLoanForm.reset();
         showPage(welcomePage);
     } catch (error) {
         console.error("Error submitting youth loan application:", error);
-        showPopup("Error submitting application. Please try again.");
+        showSuccessPopup("Error submitting application. Please try again.");
+    } finally {
+        hideLoading();
     }
 });
 
 gharLoanForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!currentUser) {
-        alert("Session expired. Please login to apply for a loan.");
+        showSuccessPopup("Session expired. Please login to apply for a loan.");
         showPage(authPage);
         return;
     }
 
-    showPopup("Uploading documents. Please wait...");
-
-    const cnicFrontFile = gharCnicFrontInput.files[0];
-    const cnicBackFile = gharCnicBackInput.files[0];
-    const relativeCnicFrontFile = gharRelativeCnicFrontInput.files[0];
-    const plotRegistryFile = gharPlotRegistryInput.files[0];
-
-    // Upload images concurrently
-    const [cnicFrontUrl, cnicBackUrl, relativeCnicFrontUrl, plotRegistryUrl] = await Promise.all([
-        uploadImageToCloudinary(cnicFrontFile),
-        uploadImageToCloudinary(cnicBackFile),
-        uploadImageToCloudinary(relativeCnicFrontFile),
-        uploadImageToCloudinary(plotRegistryFile)
-    ]);
-
-    if (!cnicFrontUrl || !cnicBackUrl || !relativeCnicFrontUrl || !plotRegistryUrl) {
-        alert("Failed to upload all required images. Application not submitted.");
-        return;
-    }
-
-    const applicationData = {
-        userId: currentUser.uid,
-        username: currentUser.username,
-        email: currentUser.email,
-        loanType: 'Apna Ghar Apni Chat Loan',
-        cnicFrontUrl: cnicFrontUrl,
-        cnicBackUrl: cnicBackUrl,
-        relativeCnicFrontUrl: relativeCnicFrontUrl,
-        mobileNumber1: gharMobile1Input.value.trim(),
-        mobileNumber2: gharMobile2Input.value.trim(),
-        plotRegistryUrl: plotRegistryUrl,
-        cnicNumber: gharCnicNumberInput.value.trim(),
-        status: 'Pending',
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    };
-
+    showLoading();
+    
     try {
+        const cnicFrontFile = gharCnicFrontInput.files[0];
+        const cnicBackFile = gharCnicBackInput.files[0];
+        const relativeCnicFrontFile = gharRelativeCnicFrontInput.files[0];
+        const plotRegistryFile = gharPlotRegistryInput.files[0];
+
+        // First store text data
+        const applicationData = {
+            userId: currentUser.uid,
+            username: currentUser.username,
+            email: currentUser.email,
+            loanType: 'Apna Ghar Apni Chat Loan',
+            mobileNumber1: gharMobile1Input.value.trim(),
+            mobileNumber2: gharMobile2Input.value.trim(),
+            cnicNumber: gharCnicNumberInput.value.trim(),
+            status: 'Pending',
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            cnicFrontUrl: 'uploading',
+            cnicBackUrl: 'uploading',
+            relativeCnicFrontUrl: 'uploading',
+            plotRegistryUrl: 'uploading'
+        };
+
         const newApplicationRef = database.ref('applications').push();
         await newApplicationRef.set(applicationData);
-        showPopup("Apna Ghar Apni Chat Loan application successfully submitted!");
+
+        // Upload images
+        const [cnicFrontUrl, cnicBackUrl, relativeCnicFrontUrl, plotRegistryUrl] = await Promise.all([
+            uploadImageToCloudinary(cnicFrontFile),
+            uploadImageToCloudinary(cnicBackFile),
+            uploadImageToCloudinary(relativeCnicFrontFile),
+            uploadImageToCloudinary(plotRegistryFile)
+        ]);
+
+        // Update with image URLs
+        await newApplicationRef.update({
+            cnicFrontUrl: cnicFrontUrl || 'failed',
+            cnicBackUrl: cnicBackUrl || 'failed',
+            relativeCnicFrontUrl: relativeCnicFrontUrl || 'failed',
+            plotRegistryUrl: plotRegistryUrl || 'failed'
+        });
+
+        showSuccessPopup("Apna Ghar Apni Chat Loan application submitted successfully!");
         gharLoanForm.reset();
         showPage(welcomePage);
     } catch (error) {
         console.error("Error submitting ghar loan application:", error);
-        showPopup("Error submitting application. Please try again.");
+        showSuccessPopup("Error submitting application. Please try again.");
+    } finally {
+        hideLoading();
     }
 });
 
@@ -499,14 +532,14 @@ gharLoanForm.addEventListener('submit', async (e) => {
 trackerSearchBtn.addEventListener('click', async () => {
     const cnic = trackerCnicInput.value.trim();
     if (!cnic) {
-        alert("Please enter your CNIC number to track your application.");
+        showSuccessPopup("Please enter your CNIC number to track your application.");
         return;
     }
 
+    showLoading();
     trackerResultsDiv.innerHTML = '<p>Searching...</p>';
 
     try {
-        // Query applications by CNIC number
         const snapshot = await database.ref('applications').orderByChild('cnicNumber').equalTo(cnic).once('value');
         const applications = snapshot.val();
         trackerResultsDiv.innerHTML = '';
@@ -515,30 +548,29 @@ trackerSearchBtn.addEventListener('click', async () => {
             Object.keys(applications).forEach(appId => {
                 const app = applications[appId];
                 const appDiv = document.createElement('div');
+                appDiv.classList.add('application-result');
                 appDiv.innerHTML = `
                     <h4>Applicant: ${app.username}</h4>
                     <p><strong>Loan Type:</strong> ${app.loanType}</p>
                     <p><strong>Mobile:</strong> ${app.mobileNumber || app.mobileNumber1}</p>
                     <p><strong>CNIC:</strong> ${app.cnicNumber}</p>
-                    <p><strong>Status:</strong> <span style="font-weight: bold; color: ${app.status === 'Approved' ? 'var(--accent-color)' : (app.status === 'Rejected' ? 'var(--danger-color)' : 'orange')}">${app.status}</span></p>
+                    <p><strong>Status:</strong> <span class="status-${app.status.toLowerCase()}">${app.status}</span></p>
+                    <p><strong>Submitted:</strong> ${new Date(app.timestamp).toLocaleString()}</p>
                 `;
                 trackerResultsDiv.appendChild(appDiv);
             });
-            if (trackerResultsDiv.innerHTML === '') {
-                 trackerResultsDiv.innerHTML = '<p>No applications found for this CNIC number.</p>';
-            }
         } else {
             trackerResultsDiv.innerHTML = '<p>No applications found for this CNIC number.</p>';
         }
     } catch (error) {
         console.error("Error fetching applications:", error);
         trackerResultsDiv.innerHTML = '<p>Error searching for applications.</p>';
+    } finally {
+        hideLoading();
     }
 });
 
-
 // --- Analytics Logic ---
-// Initialize analytics data if not present
 async function initializeAnalytics() {
     const analyticsRef = database.ref('analytics');
     const snapshot = await analyticsRef.once('value');
@@ -556,7 +588,7 @@ async function initializeAnalytics() {
     loadAnalyticsData();
 }
 
-async function loadAnalyticsData() {
+function loadAnalyticsData() {
     const analyticsRef = database.ref('analytics');
     analyticsRef.on('value', (snapshot) => {
         const data = snapshot.val();
@@ -580,7 +612,7 @@ likeBtn.addEventListener('click', async () => {
     analyticsRef.transaction((currentLikes) => {
         return (currentLikes || 0) + 1;
     });
-    alert('Thanks for liking our app!');
+    showSuccessPopup('Thanks for liking our app!');
 });
 
 ratingStarsDiv.addEventListener('click', async (e) => {
@@ -599,11 +631,10 @@ ratingStarsDiv.addEventListener('click', async (e) => {
             } else if (committed) {
                 const data = snapshot.val();
                 updateRatingDisplay(data.total, data.count);
-                alert(`You rated ${rating} stars!`);
+                showSuccessPopup(`You rated ${rating} stars!`);
             }
         });
 
-        // Visually update stars
         document.querySelectorAll('.star').forEach(star => {
             if (parseInt(star.dataset.value) <= rating) {
                 star.classList.add('selected');
@@ -626,14 +657,15 @@ function updateRatingDisplay(total, count) {
 submitFeedbackBtn.addEventListener('click', async () => {
     const feedback = feedbackTextarea.value.trim();
     if (!feedback) {
-        alert("Please enter your feedback.");
+        showSuccessPopup("Please enter your feedback.");
         return;
     }
     if (!currentUser) {
-        alert("Please login to submit feedback.");
+        showSuccessPopup("Please login to submit feedback.");
         return;
     }
 
+    showLoading();
     try {
         const feedbackRef = database.ref('analytics/feedback').push();
         await feedbackRef.set({
@@ -650,13 +682,12 @@ submitFeedbackBtn.addEventListener('click', async () => {
         console.error("Error submitting feedback:", error);
         feedbackStatusDiv.textContent = "Error submitting feedback.";
         feedbackStatusDiv.style.color = 'var(--danger-color)';
+    } finally {
+        hideLoading();
     }
 });
 
-// --- Admin Page Logic (INSECURE for production) ---
-// This is a highly insecure implementation for demonstration purposes.
-// A real admin panel would require proper authentication and server-side processing.
-
+// --- Admin Page Logic ---
 function loadAdminApplications() {
     if (!isAdminLoggedIn) {
         adminApplicationsDiv.innerHTML = '<p>You do not have administrative access.</p>';
@@ -664,12 +695,10 @@ function loadAdminApplications() {
     }
 
     const applicationsRef = database.ref('applications');
-    // Using 'on' for real-time updates in admin panel
     applicationsRef.on('value', (snapshot) => {
-        adminApplicationsDiv.innerHTML = ''; // Clear previous
+        adminApplicationsDiv.innerHTML = '';
         const applications = snapshot.val();
         if (applications) {
-            // Convert to array and sort by timestamp (newest first)
             const sortedApplications = Object.keys(applications).map(key => ({
                 id: key,
                 ...applications[key]
@@ -699,7 +728,6 @@ function loadAdminApplications() {
                 adminApplicationsDiv.appendChild(appItem);
             });
 
-            // Attach event listeners after elements are in DOM
             document.querySelectorAll('.approve-btn').forEach(button => {
                 button.addEventListener('click', (e) => updateApplicationStatus(e.target.dataset.id, 'Approved'));
             });
@@ -715,19 +743,20 @@ function loadAdminApplications() {
 
 async function updateApplicationStatus(appId, status) {
     if (!isAdminLoggedIn) {
-        alert("Permission denied.");
+        showSuccessPopup("Permission denied.");
         return;
     }
+    showLoading();
     try {
         await database.ref(`applications/${appId}/status`).set(status);
-        // The 'on' listener in loadAdminApplications will automatically update the UI
-        showPopup(`Application ${appId} status updated to ${status}.`);
+        showSuccessPopup(`Application status updated to ${status}.`);
     } catch (error) {
         console.error("Error updating status:", error);
-        alert("Failed to update application status.");
+        showSuccessPopup("Failed to update application status.");
+    } finally {
+        hideLoading();
     }
 }
-
 
 // --- Footer Navigation ---
 navWelcome.addEventListener('click', () => {
@@ -741,13 +770,12 @@ navWelcome.addEventListener('click', () => {
 navEligibility.addEventListener('click', () => showPage(eligibilityPage));
 navAnalytics.addEventListener('click', () => {
     showPage(analyticsPage);
-    loadAnalyticsData(); // Reload data when navigating to analytics
+    loadAnalyticsData();
 });
 navTracker.addEventListener('click', () => showPage(trackerPage));
-
 
 // --- Initial App Load ---
 document.addEventListener('DOMContentLoaded', () => {
     checkUserStatus();
-    initializeAnalytics(); // Ensure analytics data is initialized
+    initializeAnalytics();
 });
