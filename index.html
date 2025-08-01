@@ -7,9 +7,19 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4A90E2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+
 </head>
 <body>
     <div id="app">
@@ -85,6 +95,11 @@
                                     z-index: 1;"></span>
                     </a>
                 </div>
+                <div id="install-container" style="text-align: center; margin: 15px 0; display: none;">
+    <button id="install-btn" class="install-button">
+        <i class="fas fa-download"></i> Install App
+    </button>
+</div>
                 <div class="image-slider-container">
                     <img id="slider-image" src="download.webp" alt="Loan Promotion">
                 </div>
