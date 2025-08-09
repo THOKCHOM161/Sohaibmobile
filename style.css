@@ -688,3 +688,30 @@ button:disabled {
         font-size: 0.7em;
     }
 }
+/* [All your existing CSS remains the same] */
+
+/* Add this at the end of your CSS file */
+.install-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4a148c;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.install-btn:hover {
+    background-color: #5e35b1;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+ 
