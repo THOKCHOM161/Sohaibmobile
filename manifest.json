@@ -8,12 +8,12 @@
     "description": "Loan application platform for Pakistani citizens",
     "icons": [
         {
-            "src": "https://cdn-icons-png.flaticon.com/512/9384/9384764.png",
+            "src": "https://cdn-icons-png.flaticon.com/128/2194/2194671.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "https://cdn-icons-png.flaticon.com/512/9384/9384764.png",
+            "src": "https://cdn-icons-png.flaticon.com/128/2194/2194671.png",
             "sizes": "512x512",
             "type": "image/png"
         }
